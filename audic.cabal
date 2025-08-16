@@ -26,7 +26,6 @@ executable audic
                     , persistent-template
                     , monad-logger
                     , time
-                    , transformers
                     , resource-pool
                     , aeson
     hs-source-dirs:   app
