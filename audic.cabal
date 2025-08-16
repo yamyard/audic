@@ -1,0 +1,34 @@
+cabal-version:      3.0
+name:               audic
+version:            0.1.0.0
+license:            AGPL-3.0-only
+license-file:       LICENSE
+author:             Mrjt
+maintainer:         meritamen@sdf.org
+category:           Dictionary
+build-type:         Simple
+
+executable audic
+    main-is:          Main.hs
+    build-depends:    base ^>=4.21.0.0
+                    , servant
+                    , servant-server
+                    , servant-blaze
+                    , blaze-html
+                    , warp
+                    , wai
+                    , text
+                    , aeson
+                    , http-conduit
+                    , http-client
+                    , persistent
+                    , persistent-sqlite
+                    , persistent-template
+                    , monad-logger
+                    , time
+                    , transformers
+                    , resource-pool
+                    , aeson
+    hs-source-dirs:   app
+    default-language: GHC2024
+    ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
