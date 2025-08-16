@@ -3,5 +3,4 @@ module Main where
 import Audic.App
 
 main :: IO ()
-main = start
-
+main = app

@@ -12,15 +12,11 @@ import Network.HTTP.Simple hiding (Proxy)
 import Network.Wai.Handler.Warp
 import Servant
 
-import Audic.Web.Routes
 import Audic.Types
 import Audic.Core
 
-app :: Pool SqlBackend -> Application
-app pool = serve (Data.Proxy.Proxy :: Proxy API) (server pool)
-
-start :: IO ()
-start = do
+app :: IO ()
+app = do
   runStdoutLoggingT $ withSqlitePool "dictionary.db" 10 $ \pool -> do
     runSqlPool (runMigration migrateAll) pool
     liftIO $ do
@@ -30,4 +26,4 @@ start = do
       putStrLn ""
       putStrLn "Copyright (C) 2025 Free Software Foundation"
       putStrLn "This program comes with ABSOLUTELY NO WARRANTY"
-      run 8080 (app pool)
+      run 8080 (createApp pool)
