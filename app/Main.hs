@@ -4,3 +4,4 @@ import Audic.App
 
 main :: IO ()
 main = start
+
