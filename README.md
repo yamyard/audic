@@ -1,2 +1,5 @@
 # Audic
-A Multiplatform Dictionary App
+
+developing
+
+
