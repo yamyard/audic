@@ -118,7 +118,7 @@ indexPage = docTypeHtml $ do
 lookupPage :: Maybe DictionaryResponse -> Maybe Text -> Html
 lookupPage Nothing (Just word) = docTypeHtml $ do
   H.head $ do
-      H.title "GNU Dictionary - Word Not Found"
+      H.title "Audic - Word Not Found"
       H.style $ toHtml gnuStyles
   H.body $ do
       H.div ! A.class_ "container" $ do
@@ -130,7 +130,7 @@ lookupPage Nothing (Just word) = docTypeHtml $ do
 
 lookupPage (Just resp) _ = docTypeHtml $ do
   H.head $ do
-      H.title $ "GNU Dictionary - " >> toHtml (Main.word resp)
+      H.title $ "Audic - " >> toHtml (Main.word resp)
       H.style $ toHtml gnuStyles
   H.body $ do
       H.div ! A.class_ "container" $ do
@@ -156,7 +156,7 @@ lookupPage (Just resp) _ = docTypeHtml $ do
 wordsPage :: [Entity Word] -> Html
 wordsPage words = docTypeHtml $ do
   H.head $ do
-      H.title "GNU Dictionary - Saved Words"
+      H.title "Audic - Saved Words"
       H.style $ toHtml gnuStyles
   H.body $ do
       H.div ! A.class_ "container" $ do
@@ -175,7 +175,7 @@ wordsPage words = docTypeHtml $ do
 headerSection :: Html
 headerSection = H.div ! A.class_ "header" $ do
   H.h1 $ H.a ! A.href "/" ! A.style "text-decoration: none; color: inherit;" $
-      "GNU Dictionary"
+      "Audic"
   H.p ! A.class_ "subtitle" $ "Free Software Dictionary Tool"
 
 meaningToHtml :: Meaning -> Html
@@ -210,8 +210,7 @@ wordEntryToHtml (Entity _ word) = H.div ! A.class_ "word-entry" $ do
 
 gnuStyles :: Text
 gnuStyles = T.unlines
-  [ "/* GNU Dictionary - Free Software Styling */"
-  , "body {"
+  [ "body {"
   , "    font-family: 'Liberation Serif', 'Times New Roman', serif;"
   , "    background-color: #ffffff;"
   , "    color: #000000;"
