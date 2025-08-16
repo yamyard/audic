@@ -471,13 +471,14 @@ app :: Pool SqlBackend -> Application
 app pool = serve (Data.Proxy.Proxy :: Data.Proxy.Proxy API) (server pool)
 
 main :: IO ()
-main =
+main = do
   runStdoutLoggingT $ withSqlitePool "dictionary.db" 10 $ \pool -> do
     runSqlPool (runMigration migrateAll) pool
-      liftIO $ do
-        putStrLn "Database initialized successfully"
-        putStrLn "Server running on http://localhost:8080"
-        putStrLn "Press Ctrl+C to stop"
-        putStrLn ""
-        putStrLn "This program comes with ABSOLUTELY NO WARRANTY"
-        run 8080 (app pool)
+    liftIO $ do
+      putStrLn "Database initialized successfully"
+      putStrLn "Server running on http://localhost:8080"
+      putStrLn "Press Ctrl+C to stop"
+      putStrLn ""
+      putStrLn "Copyright (C) 2025 Free Software Foundation"
+      putStrLn "This program comes with ABSOLUTELY NO WARRANTY"
+      run 8080 (app pool)
