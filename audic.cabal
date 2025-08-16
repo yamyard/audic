@@ -3,13 +3,28 @@ name:               audic
 version:            0.1.0.0
 license:            GPL-3.0-only
 license-file:       LICENSE
-author:             yamyard, Mrjt
-maintainer:         yamyard<yamyard@hotmail.com>, Mrjt<meritamen@sdf.org>
+author:             Mrjt, yamyard
+maintainer:         Mrjt<meritamen@sdf.org>, yamyard<yamyard@hotmail.com>
 category:           Dictionary
 build-type:         Simple
 
-executable audic
-    main-is:          Main.hs
+library audic-lib
+    exposed-modules: Audic.App
+                    , Audic.Core
+                    , Audic.Core.Server
+                    , Audic.Types
+                    , Audic.Web
+                    , Audic.Web.Handlers
+                    , Audic.Web.Handlers.Index
+                    , Audic.Web.Handlers.Lookup
+                    , Audic.Web.Handlers.Words
+                    , Audic.Web.Routes
+                    , Audic.Web.Style
+                    , Audic.Web.Views
+                    , Audic.Web.Views.Components
+                    , Audic.Web.Views.Index
+                    , Audic.Web.Views.Lookup
+                    , Audic.Web.Views.Words
     build-depends:    base ^>=4.21.0.0
                     , servant
                     , servant-server
@@ -26,9 +41,15 @@ executable audic
                     , persistent-template
                     , monad-logger
                     , time
-                    , transformers
                     , resource-pool
                     , aeson
+    hs-source-dirs:   src
+    default-language: GHC2024
+
+executable audic
+    main-is:          Main.hs
+    build-depends:    base ^>=4.21.0.0
+                    , audic-lib
     hs-source-dirs:   app
     default-language: GHC2024
     ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
