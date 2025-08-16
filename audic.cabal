@@ -3,8 +3,8 @@ name:               audic
 version:            0.1.0.0
 license:            GPL-3.0-only
 license-file:       LICENSE
-author:             yamyard, Mrjt
-maintainer:         yamyard<yamyard@hotmail.com>, Mrjt<meritamen@sdf.org>
+author:             Mrjt, yamyard
+maintainer:         Mrjt<meritamen@sdf.org>, yamyard<yamyard@hotmail.com>
 category:           Dictionary
 build-type:         Simple
 
