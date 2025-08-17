@@ -14,7 +14,7 @@ main = do
   runStdoutLoggingT $ withSqlitePool "dictionary.db" 10 $ \pool -> do
     runSqlPool (runMigration migrateAll) pool
     liftIO $ do
-      putStrLn "Database initialized successfully"
+      putStrLn "Application initialized successfully"
       putStrLn "Server running on http://localhost:8080"
       putStrLn "Press Ctrl+C to stop"
       putStrLn ""

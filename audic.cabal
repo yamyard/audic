@@ -10,24 +10,25 @@ build-type:         Simple
 
 executable audic
     main-is:          Main.hs
-    build-depends:    base ^>=4.21.0.0
-                    , servant
-                    , servant-server
-                    , servant-blaze
+    build-depends:    aeson
+                    , base ^>=4.21.0.0
                     , blaze-html
-                    , warp
-                    , wai
-                    , text
-                    , aeson
-                    , http-conduit
                     , http-client
+                    , http-conduit
+                    , monad-logger
                     , persistent
                     , persistent-sqlite
                     , persistent-template
-                    , monad-logger
-                    , time
                     , resource-pool
-                    , aeson
+                    , servant
+                    , servant-blaze
+                    , servant-server
+                    , text
+                    , time
+                    , wai
+                    , warp
     hs-source-dirs:   src
+    other-modules:    Api.Core
+                    , Frontend.Core
     default-language: GHC2024
     ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N

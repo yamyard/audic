@@ -1,15 +1,15 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE TypeOperators #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE UndecidableInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Api.Core
   ( API
@@ -17,18 +17,18 @@ module Api.Core
   , migrateAll
   ) where
 
-import Prelude hiding (Word)
 import Control.Exception (catch)
 import Control.Monad.IO.Class (liftIO)
 import Data.Pool (Pool)
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Data.Time
 import Database.Persist
 import Database.Persist.Sqlite
 import Database.Persist.TH
 import GHC.Generics
 import Network.HTTP.Simple
+import Prelude hiding (Word)
 import Servant
 import Servant.HTML.Blaze (HTML)
 import Text.Blaze.Html5 (Html)
@@ -43,7 +43,6 @@ import Frontend.Core
   , SavedWordVM(..)
   )
 
--- 数据库实体（保持与你原文件一致）
 share [mkPersist sqlSettings, mkMigrate "migrateAll"] [persistLowerCase|
 Word
     word Text
@@ -55,7 +54,6 @@ Word
     deriving Show Generic
 |]
 
--- API 类型（保持不变）
 type API =
        Get '[HTML] Html
   :<|> "lookup" :> QueryParam "word" Text :> Get  '[HTML] Html
@@ -63,7 +61,6 @@ type API =
   :<|> "words"  :> Get  '[HTML] Html
   :<|> "static" :> Raw
 
--- Server 组合（保持不变）
 server :: Pool SqlBackend -> Server API
 server pool =
        indexHandler
@@ -72,7 +69,6 @@ server pool =
   :<|> wordsHandler pool
   :<|> serveDirectoryWebApp "static"
 
--- 处理函数（逻辑基本保持不变）
 indexHandler :: Handler Html
 indexHandler = pure indexPage
 
@@ -90,7 +86,6 @@ addHandler pool formData = do
     Nothing -> pure indexPage
     Just w  -> do
       now <- liftIO getCurrentTime
-      -- 这里仍然使用占位定义，与你原来一致
       _ <- liftIO $ runSqlPool (insert $ Word w "Definition from lookup" phoneticText Nothing Nothing now) pool
       wordsHandler pool
 
@@ -100,7 +95,6 @@ wordsHandler pool = do
   let vms = map toVM rows
   pure $ wordsPage vms
 
--- 将 DB 记录映射到前端 ViewModel，避免 Frontend 依赖持久化类型
 toVM :: Entity Word -> SavedWordVM
 toVM (Entity _ w) = SavedWordVM
   { swWord        = wordWord w
@@ -111,7 +105,6 @@ toVM (Entity _ w) = SavedWordVM
   , swAddedAt     = wordAddedAt w
   }
 
--- 外部字典查询（保持你的实现）
 lookupWord :: Text -> IO (Maybe DictionaryResponse)
 lookupWord w = do
   let url = "https://api.dictionaryapi.dev/api/v2/entries/en/" ++ T.unpack w

@@ -1,13 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Frontend.Core
-  ( -- 页面
-    indexPage
+  ( indexPage
   , lookupPage
   , wordsPage
-    -- 用于渲染的类型
   , DictionaryResponse(..)
   , Meaning(..)
   , Definition(..)
@@ -16,15 +14,13 @@ module Frontend.Core
 
 import Data.Aeson (FromJSON)
 import Data.Text (Text)
-import qualified Data.Text as T
+import Data.Text qualified as T
 import Data.Time
 import GHC.Generics
+import Prelude hiding (Word)
 import Servant.HTML.Blaze (HTML)
 import Text.Blaze.Html5 as H
 import Text.Blaze.Html5.Attributes as A
-import Prelude hiding (Word)
-
--- ========= 渲染所需的数据类型（保持你的原字段名） =========
 
 data DictionaryResponse = DictionaryResponse
   { word     :: Text
@@ -45,7 +41,6 @@ data Definition = Definition
   } deriving (Show, Generic)
     deriving anyclass (FromJSON)
 
--- 前端用的词条 VM，避免直接依赖 Persistent 的 Entity/Word
 data SavedWordVM = SavedWordVM
   { swWord         :: Text
   , swDefinition   :: Text
@@ -54,8 +49,6 @@ data SavedWordVM = SavedWordVM
   , swExample      :: Maybe Text
   , swAddedAt      :: UTCTime
   } deriving (Show)
-
--- ========= 样式 =========
 
 gnuStyles :: Text
 gnuStyles = T.unlines
@@ -67,41 +60,206 @@ gnuStyles = T.unlines
   , "    padding: 20px;"
   , "    line-height: 1.6;"
   , "}"
-  , ".container { max-width: 800px; margin: 0 auto; background-color: #ffffff; border: 2px solid #000000; padding: 20px; }"
-  , ".header { text-align: center; border-bottom: 2px solid #000000; margin-bottom: 30px; padding-bottom: 20px; }"
-  , "h1 { font-size: 2.5em; margin: 0; font-weight: bold; color: #000000; }"
-  , ".subtitle { font-style: italic; margin: 10px 0; color: #444444; }"
-  , ".gnu-notice { background-color: #f5f5f5; border: 1px solid #cccccc; padding: 10px; margin: 15px 0; font-size: 0.9em; text-align: left; }"
-  , ".search-section { margin: 30px 0; text-align: center; }"
-  , ".word-input { padding: 10px; font-size: 16px; border: 2px solid #000000; margin-right: 10px; width: 300px; font-family: 'Liberation Mono', monospace; }"
-  , ".btn { padding: 10px 20px; background-color: #ffffff; border: 2px solid #000000; cursor: pointer; font-size: 16px; text-decoration: none; color: #000000; display: inline-block; margin: 5px; font-family: 'Liberation Sans', sans-serif; }"
-  , ".btn:hover { background-color: #f0f0f0; }"
-  , ".add-btn { background-color: #e6f3ff; border-color: #0066cc; }"
-  , ".navigation { text-align: center; margin: 20px 0; }"
-  , ".nav-link { margin: 0 15px; color: #0066cc; text-decoration: underline; }"
-  , ".word-result { margin: 30px 0; border: 1px solid #000000; padding: 20px; }"
-  , ".word-title { font-size: 2em; margin-bottom: 10px; color: #000000; }"
-  , ".phonetic { font-family: 'Liberation Mono', monospace; color: #666666; font-style: italic; }"
-  , ".meanings { margin-top: 20px; }"
-  , ".meaning { margin: 20px 0; border-left: 3px solid #cccccc; padding-left: 15px; }"
-  , ".part-of-speech { color: #0066cc; font-style: italic; margin-bottom: 10px; }"
-  , ".definitions { margin-left: 0; padding-left: 20px; }"
-  , ".definition-item { margin: 10px 0; }"
-  , ".definition-text { margin: 5px 0; }"
-  , ".example { color: #666666; margin: 5px 0 15px 0; }"
-  , ".word-list { margin: 20px 0; }"
-  , ".word-entry { border: 1px solid #cccccc; margin: 15px 0; padding: 15px; background-color: #fafafa; }"
-  , ".saved-word { margin: 0 0 10px 0; color: #000000; }"
-  , ".pos-tag { background-color: #e6f3ff; padding: 2px 8px; border: 1px solid #0066cc; font-size: 0.8em; margin-right: 10px; }"
-  , ".date-added { font-size: 0.8em; color: #888888; margin-top: 10px; }"
-  , ".info-box { border: 2px solid #000000; padding: 15px; margin: 20px 0; background-color: #f9f9f9; }"
-  , ".license-note { font-size: 0.9em; font-style: italic; color: #666666; }"
-  , ".error-section { text-align: center; margin: 40px 0; padding: 20px; border: 2px solid #cc0000; background-color: #fff5f5; }"
-  , ".empty-notice { text-align: center; color: #666666; font-style: italic; margin: 40px 0; }"
-  , ".add-form { margin: 15px 0; text-align: center; }"
+  , ""
+  , ".container {"
+  , "    max-width: 800px;"
+  , "    margin: 0 auto;"
+  , "    background-color: #ffffff;"
+  , "    border: 2px solid #000000;"
+  , "    padding: 20px;"
+  , "}"
+  , ""
+  , ".header {"
+  , "    text-align: center;"
+  , "    border-bottom: 2px solid #000000;"
+  , "    margin-bottom: 30px;"
+  , "    padding-bottom: 20px;"
+  , "}"
+  , ""
+  , "h1 {"
+  , "    font-size: 2.5em;"
+  , "    margin: 0;"
+  , "    font-weight: bold;"
+  , "    color: #000000;"
+  , "}"
+  , ""
+  , ".subtitle {"
+  , "    font-style: italic;"
+  , "    margin: 10px 0;"
+  , "    color: #444444;"
+  , "}"
+  , ""
+  , ".gnu-notice {"
+  , "    background-color: #f5f5f5;"
+  , "    border: 1px solid #cccccc;"
+  , "    padding: 10px;"
+  , "    margin: 15px 0;"
+  , "    font-size: 0.9em;"
+  , "    text-align: left;"
+  , "}"
+  , ""
+  , ".search-section {"
+  , "    margin: 30px 0;"
+  , "    text-align: center;"
+  , "}"
+  , ""
+  , ".word-input {"
+  , "    padding: 10px;"
+  , "    font-size: 16px;"
+  , "    border: 2px solid #000000;"
+  , "    margin-right: 10px;"
+  , "    width: 300px;"
+  , "    font-family: 'Liberation Mono', monospace;"
+  , "}"
+  , ""
+  , ".btn {"
+  , "    padding: 10px 20px;"
+  , "    background-color: #ffffff;"
+  , "    border: 2px solid #000000;"
+  , "    cursor: pointer;"
+  , "    font-size: 16px;"
+  , "    text-decoration: none;"
+  , "    color: #000000;"
+  , "    display: inline-block;"
+  , "    margin: 5px;"
+  , "    font-family: 'Liberation Sans', sans-serif;"
+  , "}"
+  , ""
+  , ".btn:hover {"
+  , "    background-color: #f0f0f0;"
+  , "}"
+  , ""
+  , ".add-btn {"
+  , "    background-color: #e6f3ff;"
+  , "    border-color: #0066cc;"
+  , "}"
+  , ""
+  , ".navigation {"
+  , "    text-align: center;"
+  , "    margin: 20px 0;"
+  , "}"
+  , ""
+  , ".nav-link {"
+  , "    margin: 0 15px;"
+  , "    color: #0066cc;"
+  , "    text-decoration: underline;"
+  , "}"
+  , ""
+  , ".word-result {"
+  , "    margin: 30px 0;"
+  , "    border: 1px solid #000000;"
+  , "    padding: 20px;"
+  , "}"
+  , ""
+  , ".word-title {"
+  , "    font-size: 2em;"
+  , "    margin-bottom: 10px;"
+  , "    color: #000000;"
+  , "}"
+  , ""
+  , ".phonetic {"
+  , "    font-family: 'Liberation Mono', monospace;"
+  , "    color: #666666;"
+  , "    font-style: italic;"
+  , "}"
+  , ""
+  , ".meanings {"
+  , "    margin-top: 20px;"
+  , "}"
+  , ""
+  , ".meaning {"
+  , "    margin: 20px 0;"
+  , "    border-left: 3px solid #cccccc;"
+  , "    padding-left: 15px;"
+  , "}"
+  , ""
+  , ".part-of-speech {"
+  , "    color: #0066cc;"
+  , "    font-style: italic;"
+  , "    margin-bottom: 10px;"
+  , "}"
+  , ""
+  , ".definitions {"
+  , "    margin-left: 0;"
+  , "    padding-left: 20px;"
+  , "}"
+  , ""
+  , ".definition-item {"
+  , "    margin: 10px 0;"
+  , "}"
+  , ""
+  , ".definition-text {"
+  , "    margin: 5px 0;"
+  , "}"
+  , ""
+  , ".example {"
+  , "    color: #666666;"
+  , "    margin: 5px 0 15px 0;"
+  , "}"
+  , ""
+  , ".word-list {"
+  , "    margin: 20px 0;"
+  , "}"
+  , ""
+  , ".word-entry {"
+  , "    border: 1px solid #cccccc;"
+  , "    margin: 15px 0;"
+  , "    padding: 15px;"
+  , "    background-color: #fafafa;"
+  , "}"
+  , ""
+  , ".saved-word {"
+  , "    margin: 0 0 10px 0;"
+  , "    color: #000000;"
+  , "}"
+  , ""
+  , ".pos-tag {"
+  , "    background-color: #e6f3ff;"
+  , "    padding: 2px 8px;"
+  , "    border: 1px solid #0066cc;"
+  , "    font-size: 0.8em;"
+  , "    margin-right: 10px;"
+  , "}"
+  , ""
+  , ".date-added {"
+  , "    font-size: 0.8em;"
+  , "    color: #888888;"
+  , "    margin-top: 10px;"
+  , "}"
+  , ""
+  , ".info-box {"
+  , "    border: 2px solid #000000;"
+  , "    padding: 15px;"
+  , "    margin: 20px 0;"
+  , "    background-color: #f9f9f9;"
+  , "}"
+  , ""
+  , ".license-note {"
+  , "    font-size: 0.9em;"
+  , "    font-style: italic;"
+  , "    color: #666666;"
+  , "}"
+  , ""
+  , ".error-section {"
+  , "    text-align: center;"
+  , "    margin: 40px 0;"
+  , "    padding: 20px;"
+  , "    border: 2px solid #cc0000;"
+  , "    background-color: #fff5f5;"
+  , "}"
+  , ""
+  , ".empty-notice {"
+  , "    text-align: center;"
+  , "    color: #666666;"
+  , "    font-style: italic;"
+  , "    margin: 40px 0;"
+  , "}"
+  , ""
+  , ".add-form {"
+  , "    margin: 15px 0;"
+  , "    text-align: center;"
+  , "}"
   ]
-
--- ========= 页面 =========
 
 indexPage :: Html
 indexPage = docTypeHtml $ do
@@ -187,13 +345,11 @@ wordsPage ws = docTypeHtml $ do
           mapM_ wordEntryToHtml ws
       H.a ! A.href "/" ! A.class_ "btn" $ "← Back to search"
 
--- 共用头部
 headerSection :: Html
 headerSection = H.div ! A.class_ "header" $ do
   H.h1 $ H.a ! A.href "/" ! A.style "text-decoration: none; color: inherit;" $ "Audic"
   H.p ! A.class_ "subtitle" $ "Free Software Dictionary Tool"
 
--- 渲染辅助
 meaningToHtml :: Meaning -> Html
 meaningToHtml m = H.div ! A.class_ "meaning" $ do
   H.h3 ! A.class_ "part-of-speech" $ toHtml (partOfSpeech m)
