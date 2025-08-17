@@ -8,47 +8,26 @@ maintainer:         Mrjt<meritamen@sdf.org>, yamyard<yamyard@hotmail.com>
 category:           Dictionary
 build-type:         Simple
 
-library audic-lib
-    exposed-modules:  Audic.App
-                    , Audic.Core
-                    , Audic.Core.Server
-                    , Audic.Types
-                    , Audic.Web
-                    , Audic.Web.Handlers
-                    , Audic.Web.Handlers.Index
-                    , Audic.Web.Handlers.Lookup
-                    , Audic.Web.Handlers.Words
-                    , Audic.Web.Routes
-                    , Audic.Web.Style
-                    , Audic.Web.Views
-                    , Audic.Web.Views.Components
-                    , Audic.Web.Views.Index
-                    , Audic.Web.Views.Lookup
-                    , Audic.Web.Views.Words
-    build-depends:    aeson
-                    , base ^>=4.21.0.0
-                    , blaze-html
-                    , http-conduit
-                    , http-client
-                    , monad-logger
-                    , persistent
-                    , persistent-sqlite
-                    , persistent-template
-                    , resource-pool
-                    , servant
-                    , servant-server
-                    , servant-blaze
-                    , text
-                    , time
-                    , warp
-                    , wai
-    hs-source-dirs:   src
-    default-language: GHC2024
-
 executable audic
     main-is:          Main.hs
     build-depends:    base ^>=4.21.0.0
-                    , audic-lib
-    hs-source-dirs:   app
+                    , servant
+                    , servant-server
+                    , servant-blaze
+                    , blaze-html
+                    , warp
+                    , wai
+                    , text
+                    , aeson
+                    , http-conduit
+                    , http-client
+                    , persistent
+                    , persistent-sqlite
+                    , persistent-template
+                    , monad-logger
+                    , time
+                    , resource-pool
+                    , aeson
+    hs-source-dirs:   src
     default-language: GHC2024
-    ghc-options:      -Wall -threaded -rtsopts -with-rtsopts=-N
+    ghc-options: -Wall -threaded -rtsopts -with-rtsopts=-N
